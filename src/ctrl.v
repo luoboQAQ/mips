@@ -86,6 +86,8 @@ always @( * ) begin
             case (funct)
                 `INSTR_ADD_FUNCT:
                     ALUOp = `ALUOp_ADD;
+                `INSTR_ADDU_FUNCT:
+                    ALUOp = `ALUOp_ADDU;
                 `INSTR_SUBU_FUNCT:
                     ALUOp = `ALUOp_SUBU;
                 `INSTR_SLT_FUNCT:

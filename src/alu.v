@@ -24,6 +24,8 @@ always @( ALUOp or A or B ) begin
     case ( ALUOp )
         `ALUOp_ADD:
             {extend_f, C} = AS + BS;
+        `ALUOp_ADDU:
+            {extend_f, C} = AS + BS;
         `ALUOp_ADDI:
             {extend_f, C} = AS + BS;
         `ALUOp_SUBU:
