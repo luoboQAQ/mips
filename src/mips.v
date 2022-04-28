@@ -80,6 +80,7 @@ npc mips_npc(
         .PC(PC),
         .NPCOp(NPCOp),
         .IMM(Addr26),
+        .RS(gpr_read1),
         .NPC(NPC)
     );
 //指令寄存器模块,提供指令

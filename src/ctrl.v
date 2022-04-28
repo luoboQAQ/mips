@@ -50,7 +50,7 @@ assign BrType = beq;
 //jump
 assign j = (opcode == `INSTR_J_OP);
 assign jal = (opcode == `INSTR_JAL_OP);
-assign JType = j;
+assign JType = j | jal;
 //other
 assign Type_other = (!JType && !RType && !IType && !BrType);
 
@@ -127,6 +127,12 @@ always @( * ) begin
                     ALUOp = `ALUOp_SRLV;
                 `INSTR_SRAV_FUNCT:
                     ALUOp = `ALUOp_SRAV;
+                `INSTR_JR_FUNCT:begin
+                    NPCOp = `NPC_JR;
+                    //ASel = 1'b0;
+                    BSel = 1'b1;
+                    ALUOp = `ALUOp_NOP;
+                end
                 default:
                     ALUOp = `ALUOp_ERROR;
             endcase

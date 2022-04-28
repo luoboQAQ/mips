@@ -2,12 +2,14 @@
 `define NPC_PLUS4           3'b000
 `define NPC_BRANCH          3'b001
 `define NPC_JUMP            3'b010
+`define NPC_JR              3'b011
 `define NPC_EXCEPT          3'b101
 `define NPC_NULL            3'b110
 // EXT control signal
 `define EXT_ZERO            2'b00
 `define EXT_SIGNED          2'b01
 `define EXT_HIGHPOS         2'b10
+
 // ALU control signal
 `define ALUOp_NOP           5'b00000
 `define ALUOp_ADD           5'b00001
