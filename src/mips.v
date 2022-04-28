@@ -8,9 +8,9 @@ input clk;
 input reset;
 
 //当前指令地址
-wire [31: 2] PC; 
+wire [31: 0] PC; 
 //下一条指令地址
-wire [31: 2] NPC;
+wire [31: 0] NPC;
 //指令
 wire [31: 0] Instr;
 //通用寄存器读到的RD1数据
@@ -85,7 +85,7 @@ npc mips_npc(
     );
 //指令寄存器模块,提供指令
 im_4k mips_im_4k(
-          .addr(PC[11: 2]),
+          .addr(PC[11: 0]),
           .dout(Instr)
       );
 //译码控制模块
