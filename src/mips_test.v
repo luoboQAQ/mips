@@ -7,6 +7,7 @@ mips U_MIPS(
      );
 
 initial begin
+    $monitor("PC=%8X,Instr=%8X", U_MIPS.PC, U_MIPS.Instr);
     clk = 1;
     rst = 0;
     #5;
