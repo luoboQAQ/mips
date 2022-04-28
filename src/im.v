@@ -2,7 +2,7 @@
 //指令寄存器
 module im_4k(addr, dout);
 //内存地址，寻址范围2^10
-input [11: 0] addr;
+input [11: 2] addr;
 //输出指令
 output [31: 0] dout;
 reg [31: 0] im[1023: 0];
@@ -18,9 +18,6 @@ initial begin
     $readmemh("test.txt", im);
 end
 
-//由于真实的CPU是8位存储,而这里是32位存储,所以需要除4得到真实的地址下标
-wire [11: 0] add;
-assign add = addr == 0 ? 0 : addr / 4;
 //根据输入的地址输出对应的数据
-assign dout = im[add];
+assign dout = im[addr];
 endmodule

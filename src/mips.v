@@ -85,7 +85,7 @@ npc mips_npc(
     );
 //指令寄存器模块,提供指令
 im_4k mips_im_4k(
-          .addr(PC[11: 0]),
+          .addr(PC[11: 2]),
           .dout(Instr)
       );
 //译码控制模块
