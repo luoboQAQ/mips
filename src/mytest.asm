@@ -1,5 +1,3 @@
-addi $t1,$0,999
-lw $t1,8($t2)
 alutest:
 addi $t1,$0,1
 addi $t2,$0,2
@@ -39,8 +37,7 @@ addi $t2,$0,2
 bne  $t1,$t2,b2
 a2:
 jal jumptest
-addi $t2,$0,0x3800
-jr   $t2
+j   dmtest
 
 b1:
 j a1
@@ -49,3 +46,11 @@ j a2
 
 jumptest:
 jr $31
+
+dmtest:
+addi $t1,$0,0x3800
+addi $t2,$0,0
+sw   $t1,8($t2)
+addi $t1,$0,10
+lw   $t1,8($t2)
+jr   $t1
