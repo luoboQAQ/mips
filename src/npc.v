@@ -19,7 +19,7 @@ always @( * ) begin
             NPC = PC + 4;
         //·ÖÖ§
         `NPC_BRANCH:
-            NPC = PC + 1 + {{14{IMM[15]}}, IMM[15: 0], 2'b00};
+            NPC = PC + 4 + {{14{IMM[15]}}, IMM[15: 0], 2'b00};
         //Ìø×ª
         `NPC_JUMP:
             NPC = {PC[31: 28], IMM[25: 0], 2'b00};

@@ -1,8 +1,12 @@
-addi $t9,$0,0x306c
+addi $t9,$0,0x307c
 jr $t9
 test1:
 addi $t1,$0,1
 addi $t2,$0,2
+beq  $t1,$t2,test1
+addi $t1,$0,2
+bne  $t1,$t2,test1
+beq  $t1,$t2,test2
 add  $t3,$t1,$t2
 addu $t4,$t1,$t2
 sub  $t3,$t2,$t1
@@ -28,3 +32,6 @@ xori $t3,$t1,10
 slti $t3,$t2,3
 sltiu $t3,$t2,1
 jal test1
+test2:
+addi $t1,$0,1
+bne  $t1,$t2,test1

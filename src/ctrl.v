@@ -23,10 +23,6 @@ output reg [1: 0] EXTOp;
 output reg [1: 0] GPRSel;
 output reg [2: 0] WDSel;
 
-//数据扩展
-wire SignExtend;
-//移位信号
-wire shamt_sign;
 //清零信号，暂时无用
 reg flush;
 
@@ -46,7 +42,7 @@ assign IType = addi | addiu | andi | ori | xori | lui | slti | sltiu;
 //brtype
 assign beq = (opcode == `INSTR_BEQ_OP);
 assign bne = (opcode == `INSTR_BNE_OP);
-assign BrType = beq;
+assign BrType = beq | bne;
 //jump
 assign j = (opcode == `INSTR_J_OP);
 assign jal = (opcode == `INSTR_JAL_OP);
@@ -58,9 +54,9 @@ assign Type_other = (!JType && !RType && !IType && !BrType);
 assign SignExtend = addi | addiu;
 //需要进行移位操作
 assign shamt_sign = (opcode == `INSTR_RTYPE_OP) && (
-                    funct == `INSTR_SLL_FUNCT || 
-                    funct == `INSTR_SRL_FUNCT || 
-                    funct == `INSTR_SRA_FUNCT);
+           funct == `INSTR_SLL_FUNCT ||
+           funct == `INSTR_SRL_FUNCT ||
+           funct == `INSTR_SRA_FUNCT);
 reg DMWr;
 
 always @( * ) begin
@@ -127,7 +123,7 @@ always @( * ) begin
                     ALUOp = `ALUOp_SRLV;
                 `INSTR_SRAV_FUNCT:
                     ALUOp = `ALUOp_SRAV;
-                `INSTR_JR_FUNCT:begin
+                `INSTR_JR_FUNCT: begin
                     NPCOp = `NPC_JR;
                     //ASel = 1'b0;
                     BSel = 1'b1;
@@ -184,10 +180,11 @@ always @( * ) begin
         BSel = 1'b0;
         ASel = 1'b0;
         flush = 0;
-        begin
-            if (beq)
-                ALUOp = `ALUOp_BEQ;
-        end
+
+        if (beq)
+            ALUOp = `ALUOp_BEQ;
+        else if (bne)
+            ALUOp = `ALUOp_BNE;
     end
     else if (JType) begin
         NPCOp = `NPC_JUMP;
@@ -197,7 +194,8 @@ always @( * ) begin
         ASel = 1'b0;
         ALUOp = `ALUOp_NOP;
         flush = 0;
-        if(jal) begin
+
+        if (jal) begin
             RFWr = 1'b1;
             GPRSel = `GPRSel_31;
         end
