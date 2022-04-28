@@ -17,6 +17,8 @@ wire [31: 0] Instr;
 wire [31: 0] gpr_read1;
 //RD2数据
 wire [31: 0] gpr_read2;
+//存储器数据
+wire [31: 0] mem_read;
 //由 16 位立即数扩展得到的 32 位立即数
 wire [31: 0] Imme32;
 //ALU 的原操作数 A
@@ -44,6 +46,8 @@ wire Zero;
 wire [2: 0]WDSel;
 //通用寄存器写使能控制信号
 wire RFWr;
+//存储器写使能控制信号
+wire DMWr;
 //通用寄存器写地址选择控制信号
 wire [1: 0]GPRSel;
 //指令中对应的字段
@@ -96,6 +100,7 @@ ctrl mips_ctrl(
          .nop(nop),
          .Zero(Zero),
          .RFWr(RFWr),
+         .DMWr(DMWr),
          .ALUOp(ALUOp),
          .NPCOp(NPCOp),
          .BSel(BSel),
@@ -116,11 +121,21 @@ gpr mips_gpr(
         .RD1(gpr_read1),
         .RD2(gpr_read2)
     );
+//存储器模块
+dm_4k mips_dm_4k(
+        .addr(alu_output[11: 2]),
+        //.din(),
+        .DMWr(DMWr),
+        .clk(clk),
+        .dout(mem_read)
+    );
+
 //选择数据
 mux4 MUX_RPR_WD(
          .d0(alu_output),
          .d1(32'b0),
          .d2(PC + 4),
+         .d3(mem_read),
          .s(WDSel),
          .y(inputdata)
      );

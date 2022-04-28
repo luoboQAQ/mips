@@ -7,7 +7,8 @@
 `define INSTR_ORI_OP        6'b001101
 `define INSTR_XORI_OP       6'b001110
 `define INSTR_LUI_OP        6'b001111
-// 还少lw.sw
+`define INSTR_LW_OP         6'b100011
+`define INSTR_SW_OP         6'b101011
 `define INSTR_BEQ_OP        6'b000100
 `define INSTR_BNE_OP        6'b000101
 `define INSTR_SLTI_OP       6'b001010

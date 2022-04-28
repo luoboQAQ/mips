@@ -2,7 +2,7 @@
 `include "ctrl_encode_def.v"
 `include "instruction_def.v" 
 //控制模块
-module ctrl(opcode, funct, rt, nop, Zero, RFWr, ALUOp, NPCOp, BSel, EXTOp, ASel, GPRSel, WDSel);
+module ctrl(opcode, funct, rt, nop, Zero, RFWr, DMWr, ALUOp, NPCOp, BSel, EXTOp, ASel, GPRSel, WDSel);
 //指令信号
 input [5: 0] opcode;
 input [5: 0] funct;
@@ -11,6 +11,8 @@ input [4: 0] rt;
 input nop, Zero;
 //通用寄存器写信号
 output reg RFWr;
+//数据存储器写信号
+output reg DMWr;
 //alu控制指令
 output reg [4: 0] ALUOp;
 //下一条指令地址变化类型
@@ -36,9 +38,11 @@ assign andi = (opcode == `INSTR_ANDI_OP);
 assign ori = (opcode == `INSTR_ORI_OP);
 assign xori = (opcode == `INSTR_XORI_OP);
 assign lui = (opcode == `INSTR_LUI_OP);
+assign lw = (opcode == `INSTR_LW_OP);
+assign sw = (opcode == `INSTR_SW_OP);
 assign slti = (opcode == `INSTR_SLTI_OP);
 assign sltiu = (opcode == `INSTR_SLTIU_OP);
-assign IType = addi | addiu | andi | ori | xori | lui | slti | sltiu;
+assign IType = addi | addiu | andi | ori | xori | lui | lw | sw | slti | sltiu;
 //brtype
 assign beq = (opcode == `INSTR_BEQ_OP);
 assign bne = (opcode == `INSTR_BNE_OP);
@@ -51,19 +55,19 @@ assign JType = j | jal;
 assign Type_other = (!JType && !RType && !IType && !BrType);
 
 //需要数据扩展的指令
-assign SignExtend = addi | addiu;
+assign SignExtend = addi | addiu | lw | sw;
 //需要进行移位操作
 assign shamt_sign = (opcode == `INSTR_RTYPE_OP) && (
            funct == `INSTR_SLL_FUNCT ||
            funct == `INSTR_SRL_FUNCT ||
            funct == `INSTR_SRA_FUNCT);
-reg DMWr;
 
 always @( * ) begin
     if (nop) begin
         //若是空指令操作
         NPCOp = 0;
         RFWr = 1'b0;
+        DMWr = 1'b0;
         EXTOp = 0;
         GPRSel = 0;
         WDSel = 0;
@@ -78,6 +82,7 @@ always @( * ) begin
         NPCOp = `NPC_PLUS4;
         //通用寄存器写信号为1，允许写
         RFWr = 1'b1;
+        DMWr = 1'b0;
         EXTOp = 0;
         //选择将数据写入的寄存器，该寄存器地址存放在 rd 中
         GPRSel = `GPRSel_RD;
@@ -134,10 +139,20 @@ always @( * ) begin
             endcase
         end
     end
-    else if (IType == 1'b1) begin
+    else if (IType) begin
         //若是 I 类型指令操作
         NPCOp = `NPC_PLUS4;
-        RFWr = 1;
+        if(sw)
+            RFWr = 0;
+        else if(lw) begin
+            RFWr = 1;
+            WDSel = `WDSel_FromMem;
+        end
+        else begin
+            RFWr = 1'b1;
+            WDSel = `WDSel_FromALU;
+        end
+        DMWr = 1'b0;
 
         //需要符号扩展
         if (SignExtend)
@@ -146,7 +161,6 @@ always @( * ) begin
             EXTOp = 0;
         //选择 rt 作为目标寄存器地址
         GPRSel = `GPRSel_RT;
-        WDSel = `WDSel_FromALU;
         //选择扩展后的立即数作为 B 源操作数
         BSel = 1'b1;
         ASel = 1'b0;
@@ -168,12 +182,15 @@ always @( * ) begin
             ALUOp = `ALUOp_SLTI;
         else if (sltiu)
             ALUOp = `ALUOp_SLTIU;
+        else
+            ALUOp = `ALUOp_ADD;
     end
     else if (BrType ) begin
         //若是分支指令类型操作
         //Zero 为 1 表示发生跳转，则 NPCOp 选择跳转；否则顺序执行
         NPCOp = (Zero) ? `NPC_BRANCH : `NPC_PLUS4;
         RFWr = 1'b0;
+        DMWr = 1'b0;
         EXTOp = 0;
         GPRSel = `GPRSel_RD;
         WDSel = `WDSel_FromPC;
@@ -193,6 +210,7 @@ always @( * ) begin
         BSel = 1'b0;
         ASel = 1'b0;
         ALUOp = `ALUOp_NOP;
+        DMWr = 1'b0;
         flush = 0;
 
         if (jal) begin
@@ -207,6 +225,7 @@ always @( * ) begin
     else if (Type_other) begin
         NPCOp = `NPC_EXCEPT;
         RFWr = 1'b0;
+        DMWr = 1'b0;
         EXTOp = 0;
         GPRSel = 0;
         WDSel = 0;
@@ -218,6 +237,7 @@ always @( * ) begin
     else begin
         NPCOp = 0;
         RFWr = 1'b0;
+        DMWr = 1'b0;
         EXTOp = 0;
         GPRSel = 0;
         WDSel = 0;

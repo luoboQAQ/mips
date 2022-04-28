@@ -47,3 +47,4 @@
 `define GPRSel_HL           2'b11
 `define WDSel_FromALU       3'b000
 `define WDSel_FromPC        3'b010
+`define WDSel_FromMem       3'b011

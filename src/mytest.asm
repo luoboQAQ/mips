@@ -1,3 +1,5 @@
+addi $t1,$0,999
+lw $t1,8($t2)
 alutest:
 addi $t1,$0,1
 addi $t2,$0,2
