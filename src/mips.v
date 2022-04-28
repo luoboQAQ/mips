@@ -8,7 +8,7 @@ input clk;
 input reset;
 
 //当前指令地址
-wire [31: 0] PC; 
+wire [31: 0] PC;
 //下一条指令地址
 wire [31: 0] NPC;
 //指令
@@ -123,12 +123,12 @@ gpr mips_gpr(
     );
 //存储器模块
 dm_4k mips_dm_4k(
-        .addr(alu_output[11: 2]),
-        .din(gpr_read2),
-        .DMWr(DMWr),
-        .clk(clk),
-        .dout(mem_read)
-    );
+          .addr(alu_output[11: 2]),
+          .din(gpr_read2),
+          .DMWr(DMWr),
+          .clk(clk),
+          .dout(mem_read)
+      );
 
 //选择数据
 mux4 MUX_RPR_WD(

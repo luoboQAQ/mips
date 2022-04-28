@@ -143,19 +143,8 @@ always @( * ) begin
         //若是 I 类型指令操作
         NPCOp = `NPC_PLUS4;
         DMWr = 1'b0;
-        if(sw) begin
-            RFWr = 0;
-            DMWr = 1;
-            WDSel = `WDSel_FromMem;
-        end
-        else if(lw) begin
-            RFWr = 1;
-            WDSel = `WDSel_FromMem;
-        end
-        else begin
-            RFWr = 1;
-            WDSel = `WDSel_FromALU;
-        end
+        RFWr = 1'b1;
+        WDSel = `WDSel_FromALU;
 
         //需要符号扩展
         if (SignExtend)
@@ -185,8 +174,15 @@ always @( * ) begin
             ALUOp = `ALUOp_SLTI;
         else if (sltiu)
             ALUOp = `ALUOp_SLTIU;
-        else
+        else if (sw) begin
             ALUOp = `ALUOp_ADD;
+            RFWr = 1'b0;
+            DMWr = 1'b1;
+        end
+        else if (lw) begin
+            ALUOp = `ALUOp_ADD;
+            WDSel = `WDSel_FromMem;
+        end
     end
     else if (BrType ) begin
         //若是分支指令类型操作
