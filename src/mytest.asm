@@ -1,12 +1,6 @@
-addi $t9,$0,0x307c
-jr $t9
-test1:
+alutest:
 addi $t1,$0,1
 addi $t2,$0,2
-beq  $t1,$t2,test1
-addi $t1,$0,2
-bne  $t1,$t2,test1
-beq  $t1,$t2,test2
 add  $t3,$t1,$t2
 addu $t4,$t1,$t2
 sub  $t3,$t2,$t1
@@ -31,7 +25,25 @@ lui  $t3,10
 xori $t3,$t1,10
 slti $t3,$t2,3
 sltiu $t3,$t2,1
-jal test1
-test2:
+branchtest:
 addi $t1,$0,1
-bne  $t1,$t2,test1
+addi $t2,$0,2
+beq  $t1,$t2,branchtest
+addi $t2,$0,1
+bne  $t1,$t2,branchtest
+beq  $t1,$t2,b1
+a1:
+addi $t2,$0,2
+bne  $t1,$t2,b2
+a2:
+jal jumptest
+addi $t2,$0,0x3800
+jr   $t2
+
+b1:
+j a1
+b2:
+j a2
+
+jumptest:
+jr $31
