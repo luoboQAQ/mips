@@ -191,21 +191,20 @@ always @( * ) begin
     end
     else if (JType) begin
         NPCOp = `NPC_JUMP;
-        RFWr = 1'b0;
         EXTOp = `EXT_SIGNED;
-        GPRSel = 0;
         WDSel = `WDSel_FromPC;
         BSel = 1'b0;
         ASel = 1'b0;
-        ALUOp = 0;
+        ALUOp = `ALUOp_NOP;
         flush = 0;
-
-        case (opcode)
-            `INSTR_J_OP:
-                ALUOp = `ALUOp_ERROR;
-            default:
-                ALUOp = `ALUOp_ERROR;
-        endcase
+        if(jal) begin
+            RFWr = 1'b1;
+            GPRSel = `GPRSel_31;
+        end
+        else begin
+            RFWr = 1'b0;
+            GPRSel = `GPRSel_RD;
+        end
     end
     else if (Type_other) begin
         NPCOp = `NPC_EXCEPT;
