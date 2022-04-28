@@ -142,17 +142,20 @@ always @( * ) begin
     else if (IType) begin
         //若是 I 类型指令操作
         NPCOp = `NPC_PLUS4;
-        if(sw)
+        DMWr = 1'b0;
+        if(sw) begin
             RFWr = 0;
+            DMWr = 1;
+            WDSel = `WDSel_FromMem;
+        end
         else if(lw) begin
             RFWr = 1;
             WDSel = `WDSel_FromMem;
         end
         else begin
-            RFWr = 1'b1;
+            RFWr = 1;
             WDSel = `WDSel_FromALU;
         end
-        DMWr = 1'b0;
 
         //需要符号扩展
         if (SignExtend)

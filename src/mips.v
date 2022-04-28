@@ -124,7 +124,7 @@ gpr mips_gpr(
 //´æ´¢Æ÷Ä£¿é
 dm_4k mips_dm_4k(
         .addr(alu_output[11: 2]),
-        //.din(),
+        .din(gpr_read2),
         .DMWr(DMWr),
         .clk(clk),
         .dout(mem_read)
