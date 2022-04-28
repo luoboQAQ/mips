@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 `include "ctrl_encode_def.v"
-`include "instruction_def.v"
+`include "instruction_def.v" 
 //控制模块
 module ctrl(opcode, funct, rt, nop, Zero, RFWr, ALUOp, NPCOp, BSel, EXTOp, ASel, GPRSel, WDSel);
 //指令信号
@@ -35,21 +35,32 @@ reg flush;
 assign RType = (opcode == `INSTR_RTYPE_OP) & !nop;
 //r-i
 assign addi = (opcode == `INSTR_ADDI_OP);
-assign Rori = (opcode == `INSTR_ORI_OP);
-assign IType = addi | Rori;
+assign addiu = (opcode == `INSTR_ADDIU_OP);
+assign andi = (opcode == `INSTR_ANDI_OP);
+assign ori = (opcode == `INSTR_ORI_OP);
+assign xori = (opcode == `INSTR_XORI_OP);
+assign lui = (opcode == `INSTR_LUI_OP);
+assign slti = (opcode == `INSTR_SLTI_OP);
+assign sltiu = (opcode == `INSTR_SLTIU_OP);
+assign IType = addi | addiu | andi | ori | xori | lui | slti | sltiu;
 //brtype
 assign beq = (opcode == `INSTR_BEQ_OP);
+assign bne = (opcode == `INSTR_BNE_OP);
 assign BrType = beq;
 //jump
 assign j = (opcode == `INSTR_J_OP);
+assign jal = (opcode == `INSTR_JAL_OP);
 assign JType = j;
 //other
 assign Type_other = (!JType && !RType && !IType && !BrType);
 
 //需要数据扩展的指令
-assign SignExtend = addi;
+assign SignExtend = addi | addiu;
 //需要进行移位操作
-assign shamt_sign = (opcode == `INSTR_RTYPE_OP) && (funct == `INSTR_SLL_FUNCT);
+assign shamt_sign = (opcode == `INSTR_RTYPE_OP) && (
+                    funct == `INSTR_SLL_FUNCT || 
+                    funct == `INSTR_SRL_FUNCT || 
+                    funct == `INSTR_SRA_FUNCT);
 reg DMWr;
 
 always @( * ) begin
@@ -79,7 +90,7 @@ always @( * ) begin
         //ALU 运算器的 B 源操作数来自通用寄存器的 readD2
         BSel <= 1'b0;
         //若是移位操作，则 A 源操作数来自 shamt 字段，是一个立即数；否则 A 源操作数选择 readD1
-        ASel <= (shamt_sign) ? 1'b1 : 1'b0; 
+        ASel <= (shamt_sign) ? 1'b1 : 1'b0;
         flush = 0;
         begin
             //指定 ALU 操作类型
@@ -88,12 +99,34 @@ always @( * ) begin
                     ALUOp = `ALUOp_ADD;
                 `INSTR_ADDU_FUNCT:
                     ALUOp = `ALUOp_ADDU;
+                `INSTR_SUB_FUNCT:
+                    ALUOp = `ALUOp_SUB;
                 `INSTR_SUBU_FUNCT:
                     ALUOp = `ALUOp_SUBU;
+                `INSTR_AND_FUNCT:
+                    ALUOp = `ALUOp_AND;
+                `INSTR_OR_FUNCT:
+                    ALUOp = `ALUOp_OR;
+                `INSTR_XOR_FUNCT:
+                    ALUOp = `ALUOp_XOR;
+                `INSTR_NOR_FUNCT:
+                    ALUOp = `ALUOp_NOR;
                 `INSTR_SLT_FUNCT:
                     ALUOp = `ALUOp_SLT;
+                `INSTR_SLTU_FUNCT:
+                    ALUOp = `ALUOp_SLTU;
                 `INSTR_SLL_FUNCT:
                     ALUOp = `ALUOp_SLL;
+                `INSTR_SRL_FUNCT:
+                    ALUOp = `ALUOp_SRL;
+                `INSTR_SRA_FUNCT:
+                    ALUOp = `ALUOp_SRA;
+                `INSTR_SLLV_FUNCT:
+                    ALUOp = `ALUOp_SLLV;
+                `INSTR_SRLV_FUNCT:
+                    ALUOp = `ALUOp_SRLV;
+                `INSTR_SRAV_FUNCT:
+                    ALUOp = `ALUOp_SRAV;
                 default:
                     ALUOp = `ALUOp_ERROR;
             endcase
@@ -119,8 +152,20 @@ always @( * ) begin
         //指定 ALU 操作类型
         if (addi)
             ALUOp = `ALUOp_ADDI;
-        if (Rori)
-            ALUOp = `ALUOp_OR;
+        else if (addiu)
+            ALUOp = `ALUOp_ADDIU;
+        else if (andi)
+            ALUOp = `ALUOp_ANDI;
+        else if (ori)
+            ALUOp = `ALUOp_ORI;
+        else if (xori)
+            ALUOp = `ALUOp_XORI;
+        else if (lui)
+            ALUOp = `ALUOp_LUI;
+        else if (slti)
+            ALUOp = `ALUOp_SLTI;
+        else if (sltiu)
+            ALUOp = `ALUOp_SLTIU;
     end
     else if (BrType ) begin
         //若是分支指令类型操作
