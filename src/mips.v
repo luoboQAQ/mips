@@ -120,7 +120,7 @@ gpr mips_gpr(
 mux4 MUX_RPR_WD(
          .d0(alu_output),
          .d1(32'b0),
-         .d2({PC + 1, 2'd0}),
+         .d2(PC + 4),
          .s(WDSel),
          .y(inputdata)
      );

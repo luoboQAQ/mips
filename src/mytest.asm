@@ -1,5 +1,5 @@
-addi $31,$0,0x306c
-jr $31
+addi $t9,$0,0x306c
+jr $t9
 test1:
 addi $t1,$0,1
 addi $t2,$0,2
@@ -27,4 +27,4 @@ lui  $t3,10
 xori $t3,$t1,10
 slti $t3,$t2,3
 sltiu $t3,$t2,1
-j test1
+jal test1
