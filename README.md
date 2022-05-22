@@ -1,6 +1,6 @@
 ## 一个简单的单周期mipsCPU
 
-本项目使用Verilog语言模拟了一个简单的单周期mips指令集CPU。完成了MiniSys的全部31条指令，配有相应的测试汇编代码，对每一条指令进行了测试。
+本项目使用Verilog语言模拟了一个简单的单周期mips指令集CPU。完成了MiniSys的全部31条指令（add、addi、addu、addiu、sub、subu、and、or、xor、lui、nor、slt、sltu、slti、sltiu、ori、sll、srl、sra、beq、bne、addi、addiu、andi、ori、xori、lui、lw、sw、beq、bne、slti、sltiu、j、jal），配有相应的测试汇编代码，对每一条指令进行了测试。
 
 ### 总体数据通路
 
