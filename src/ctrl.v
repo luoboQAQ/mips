@@ -1,34 +1,34 @@
 `timescale 1ns/10ps
 `include "ctrl_encode_def.v"
 `include "instruction_def.v" 
-//¿ØÖÆÄ£¿é
+//æ§åˆ¶æ¨¡å—
 module ctrl(opcode, funct, rt, nop, Zero, RFWr, DMWr, ALUOp, NPCOp, BSel, EXTOp, ASel, GPRSel, WDSel);
-//Ö¸ÁîĞÅºÅ
+//æŒ‡ä»¤ä¿¡å·
 input [5: 0] opcode;
 input [5: 0] funct;
 input [4: 0] rt;
-//¿ÕÖ¸ÁîÓë·ÖÖ§Ö¸ÁîÅĞ¶Ï
+//ç©ºæŒ‡ä»¤ä¸åˆ†æ”¯æŒ‡ä»¤åˆ¤æ–­
 input nop, Zero;
-//Í¨ÓÃ¼Ä´æÆ÷Ğ´ĞÅºÅ
+//é€šç”¨å¯„å­˜å™¨å†™ä¿¡å·
 output reg RFWr;
-//Êı¾İ´æ´¢Æ÷Ğ´ĞÅºÅ
+//æ•°æ®å­˜å‚¨å™¨å†™ä¿¡å·
 output reg DMWr;
-//alu¿ØÖÆÖ¸Áî
+//aluæ§åˆ¶æŒ‡ä»¤
 output reg [4: 0] ALUOp;
-//ÏÂÒ»ÌõÖ¸ÁîµØÖ·±ä»¯ÀàĞÍ
+//ä¸‹ä¸€æ¡æŒ‡ä»¤åœ°å€å˜åŒ–ç±»å‹
 output reg [2: 0] NPCOp;
-//alu ²Ù×÷ÊıÑ¡Ôñ
+//alu æ“ä½œæ•°é€‰æ‹©
 output reg ASel, BSel;
-//ÍØÕ¹Êı¾İÀàĞÍ
+//æ‹“å±•æ•°æ®ç±»å‹
 output reg [1: 0] EXTOp;
-//´æ´¢Êı¾İÑ¡Ôñ,·Ö±ğÑ¡ÔñÍ¨ÓÃ¼Ä´æÆ÷µÄ±êºÅ¡¢´æÈë¼Ä´æÆ÷µÄÊı¾İ
+//å­˜å‚¨æ•°æ®é€‰æ‹©,åˆ†åˆ«é€‰æ‹©é€šç”¨å¯„å­˜å™¨çš„æ ‡å·ã€å­˜å…¥å¯„å­˜å™¨çš„æ•°æ®
 output reg [1: 0] GPRSel;
 output reg [2: 0] WDSel;
 
-//ÇåÁãĞÅºÅ£¬ÔİÊ±ÎŞÓÃ
+//æ¸…é›¶ä¿¡å·ï¼Œæš‚æ—¶æ— ç”¨
 reg flush;
 
-//Ö¸ÁîÀàĞÍÅĞ¶Ï
+//æŒ‡ä»¤ç±»å‹åˆ¤æ–­
 //r-r
 assign RType = (opcode == `INSTR_RTYPE_OP) & !nop;
 //r-i
@@ -51,12 +51,10 @@ assign BrType = beq | bne;
 assign j = (opcode == `INSTR_J_OP);
 assign jal = (opcode == `INSTR_JAL_OP);
 assign JType = j | jal;
-//other
-assign Type_other = (!JType && !RType && !IType && !BrType);
 
-//ĞèÒªÊı¾İÀ©Õ¹µÄÖ¸Áî
+//éœ€è¦æ•°æ®æ‰©å±•çš„æŒ‡ä»¤
 assign SignExtend = addi | addiu | lw | sw;
-//ĞèÒª½øĞĞÒÆÎ»²Ù×÷
+//éœ€è¦è¿›è¡Œç§»ä½æ“ä½œ
 assign shamt_sign = (opcode == `INSTR_RTYPE_OP) && (
            funct == `INSTR_SLL_FUNCT ||
            funct == `INSTR_SRL_FUNCT ||
@@ -64,7 +62,7 @@ assign shamt_sign = (opcode == `INSTR_RTYPE_OP) && (
 
 always @( * ) begin
     if (nop) begin
-        //ÈôÊÇ¿ÕÖ¸Áî²Ù×÷
+        //è‹¥æ˜¯ç©ºæŒ‡ä»¤æ“ä½œ
         NPCOp = 0;
         RFWr = 1'b0;
         DMWr = 1'b0;
@@ -77,24 +75,24 @@ always @( * ) begin
         flush = 0;
     end
     else if (RType) begin
-        //ÈôÊÇ R Ö¸Áî²Ù×÷
-        //NPC Ñ¡ÔñË³ĞòÖ´ĞĞµÄÖ¸Áî
+        //è‹¥æ˜¯ R æŒ‡ä»¤æ“ä½œ
+        //NPC é€‰æ‹©é¡ºåºæ‰§è¡Œçš„æŒ‡ä»¤
         NPCOp = `NPC_PLUS4;
-        //Í¨ÓÃ¼Ä´æÆ÷Ğ´ĞÅºÅÎª1£¬ÔÊĞíĞ´
+        //é€šç”¨å¯„å­˜å™¨å†™ä¿¡å·ä¸º1ï¼Œå…è®¸å†™
         RFWr = 1'b1;
         DMWr = 1'b0;
         EXTOp = 0;
-        //Ñ¡Ôñ½«Êı¾İĞ´ÈëµÄ¼Ä´æÆ÷£¬¸Ã¼Ä´æÆ÷µØÖ·´æ·ÅÔÚ rd ÖĞ
+        //é€‰æ‹©å°†æ•°æ®å†™å…¥çš„å¯„å­˜å™¨ï¼Œè¯¥å¯„å­˜å™¨åœ°å€å­˜æ”¾åœ¨ rd ä¸­
         GPRSel = `GPRSel_RD;
-        //Ğ´ÈëÍ¨ÓÃ¼Ä´æÆ÷µÄÊı¾İÀ´×Ô alu µÄÔËËã½á¹û
+        //å†™å…¥é€šç”¨å¯„å­˜å™¨çš„æ•°æ®æ¥è‡ª alu çš„è¿ç®—ç»“æœ
         WDSel = `WDSel_FromALU;
-        //ALU ÔËËãÆ÷µÄ B Ô´²Ù×÷ÊıÀ´×ÔÍ¨ÓÃ¼Ä´æÆ÷µÄ readD2
+        //ALU è¿ç®—å™¨çš„ B æºæ“ä½œæ•°æ¥è‡ªé€šç”¨å¯„å­˜å™¨çš„ readD2
         BSel <= 1'b0;
-        //ÈôÊÇÒÆÎ»²Ù×÷£¬Ôò A Ô´²Ù×÷ÊıÀ´×Ô shamt ×Ö¶Î£¬ÊÇÒ»¸öÁ¢¼´Êı£»·ñÔò A Ô´²Ù×÷ÊıÑ¡Ôñ readD1
+        //è‹¥æ˜¯ç§»ä½æ“ä½œï¼Œåˆ™ A æºæ“ä½œæ•°æ¥è‡ª shamt å­—æ®µï¼Œæ˜¯ä¸€ä¸ªç«‹å³æ•°ï¼›å¦åˆ™ A æºæ“ä½œæ•°é€‰æ‹© readD1
         ASel <= (shamt_sign) ? 1'b1 : 1'b0;
         flush = 0;
         begin
-            //Ö¸¶¨ ALU ²Ù×÷ÀàĞÍ
+            //æŒ‡å®š ALU æ“ä½œç±»å‹
             case (funct)
                 `INSTR_ADD_FUNCT:
                     ALUOp = `ALUOp_ADD;
@@ -140,24 +138,24 @@ always @( * ) begin
         end
     end
     else if (IType) begin
-        //ÈôÊÇ I ÀàĞÍÖ¸Áî²Ù×÷
+        //è‹¥æ˜¯ I ç±»å‹æŒ‡ä»¤æ“ä½œ
         NPCOp = `NPC_PLUS4;
         DMWr = 1'b0;
         RFWr = 1'b1;
         WDSel = `WDSel_FromALU;
 
-        //ĞèÒª·ûºÅÀ©Õ¹
+        //éœ€è¦ç¬¦å·æ‰©å±•
         if (SignExtend)
             EXTOp = `EXT_SIGNED;
         else
             EXTOp = 0;
-        //Ñ¡Ôñ rt ×÷ÎªÄ¿±ê¼Ä´æÆ÷µØÖ·
+        //é€‰æ‹© rt ä½œä¸ºç›®æ ‡å¯„å­˜å™¨åœ°å€
         GPRSel = `GPRSel_RT;
-        //Ñ¡ÔñÀ©Õ¹ºóµÄÁ¢¼´Êı×÷Îª B Ô´²Ù×÷Êı
+        //é€‰æ‹©æ‰©å±•åçš„ç«‹å³æ•°ä½œä¸º B æºæ“ä½œæ•°
         BSel = 1'b1;
         ASel = 1'b0;
         flush = 0;
-        //Ö¸¶¨ ALU ²Ù×÷ÀàĞÍ
+        //æŒ‡å®š ALU æ“ä½œç±»å‹
         if (addi)
             ALUOp = `ALUOp_ADDI;
         else if (addiu)
@@ -185,8 +183,8 @@ always @( * ) begin
         end
     end
     else if (BrType ) begin
-        //ÈôÊÇ·ÖÖ§Ö¸ÁîÀàĞÍ²Ù×÷
-        //Zero Îª 1 ±íÊ¾·¢ÉúÌø×ª£¬Ôò NPCOp Ñ¡ÔñÌø×ª£»·ñÔòË³ĞòÖ´ĞĞ
+        //è‹¥æ˜¯åˆ†æ”¯æŒ‡ä»¤ç±»å‹æ“ä½œ
+        //Zero ä¸º 1 è¡¨ç¤ºå‘ç”Ÿè·³è½¬ï¼Œåˆ™ NPCOp é€‰æ‹©è·³è½¬ï¼›å¦åˆ™é¡ºåºæ‰§è¡Œ
         NPCOp = (Zero) ? `NPC_BRANCH : `NPC_PLUS4;
         RFWr = 1'b0;
         DMWr = 1'b0;
@@ -221,20 +219,8 @@ always @( * ) begin
             GPRSel = `GPRSel_RD;
         end
     end
-    else if (Type_other) begin
-        NPCOp = `NPC_EXCEPT;
-        RFWr = 1'b0;
-        DMWr = 1'b0;
-        EXTOp = 0;
-        GPRSel = 0;
-        WDSel = 0;
-        BSel = 1'b0;
-        ASel = 1'b0;
-        ALUOp = 0;
-        flush = 1;
-    end
     else begin
-        NPCOp = 0;
+        NPCOp = `NPC_EXCEPT;
         RFWr = 1'b0;
         DMWr = 1'b0;
         EXTOp = 0;
