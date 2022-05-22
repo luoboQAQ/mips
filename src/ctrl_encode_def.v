@@ -40,6 +40,8 @@
 `define ALUOp_SLTI          5'b11001
 `define ALUOp_SLTIU         5'b11010
 `define ALUOp_ERROR         5'b11111
+`define ALUOp_MAX           5'b11110
+
 // GPR control signal
 `define GPRSel_RD           2'b00
 `define GPRSel_RT           2'b01

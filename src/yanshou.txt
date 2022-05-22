@@ -1,0 +1,10 @@
+s2 i
+s3 j
+s4 j+1
+s5 (len_array-1)*4
+s6 (len_array-1)*4-i
+t1 array[i]
+t2 array[j]
+t3
+t8 恒为1
+t9 恒为4

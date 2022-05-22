@@ -1,6 +1,5 @@
 // OP
 `define INSTR_RTYPE_OP      6'b000000
-
 `define INSTR_ADDI_OP       6'b001000
 `define INSTR_ADDIU_OP      6'b001001
 `define INSTR_ANDI_OP       6'b001100
@@ -16,6 +15,9 @@
 
 `define INSTR_J_OP          6'b000010
 `define INSTR_JAL_OP        6'b000011
+
+`define INSTR_ForType_OP    6'b111000
+
 // Funct
 `define INSTR_ADD_FUNCT     6'b100000
 `define INSTR_ADDU_FUNCT    6'b100001

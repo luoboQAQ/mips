@@ -1,10 +1,11 @@
 `timescale 1ns/10ps
 `include "ctrl_encode_def.v" 
 //ALU运算模块
-module alu_32(A, B, ALUOp, C, Zero);
+module alu_32(A, B,D, ALUOp, C, Zero);
 //两个 32 位源操作数
 input [31: 0] A;
 input [31: 0] B;
+input [31: 0] D;
 //从控制单元来的控制信号，用于运算选择
 input [4: 0] ALUOp;
 //32 位计算结果
@@ -12,6 +13,7 @@ output reg [31: 0] C;
 //分支指令的判断
 output Zero;
 assign Zero = C[0];
+reg [31:0] temp;
 
 //S表示有符号数,Z表示无符号数
 wire [32: 0] AS = {A[31], A[31: 0]};
@@ -76,7 +78,11 @@ always @( ALUOp or A or B ) begin
             C <= (A[31] && B[31] || !A[31] && !B[31]) ? (A < B) ? 1 : 0 : (A[31] && !B[31]) ? 1 : 0;
         `ALUOp_SLTIU:
             C <= (A[31] && B[31] || !A[31] && !B[31]) ? (A < B) ? 1 : 0 : (A[31] && !B[31]) ? 1 : 0;
-
+        `ALUOp_MAX:
+        begin
+            temp = A>B?A:B;
+            C = temp>D?temp:D;
+        end
         default:
             C <= 0;
     endcase

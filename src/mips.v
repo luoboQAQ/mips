@@ -17,6 +17,7 @@ wire [31: 0] Instr;
 wire [31: 0] gpr_read1;
 //RD2数据
 wire [31: 0] gpr_read2;
+wire [31: 0] gpr_read3;
 //存储器数据
 wire [31: 0] mem_read;
 //由 16 位立即数扩展得到的 32 位立即数
@@ -25,6 +26,7 @@ wire [31: 0] Imme32;
 wire [31: 0] ALU_A, A;
 //ALU 的原操作数 B
 wire [31: 0] ALU_B, B;
+wire [31: 0] ALU_D, D;
 //ALU 输出结果
 wire [31: 0] alu_output;
 //存储到寄存器中的地址
@@ -117,9 +119,11 @@ gpr mips_gpr(
         .addr1(RS),
         .addr2(RT),
         .addr3(waddr),
+        .addr4(Shamt),
         .inputdata(inputdata),
         .RD1(gpr_read1),
-        .RD2(gpr_read2)
+        .RD2(gpr_read2),
+        .RD3(gpr_read3)
     );
 //存储器模块
 dm_4k mips_dm_4k(
@@ -171,14 +175,17 @@ Extend EXTEND(
 alu_p mips_alu_32_p(
           .A_i(A),
           .B_i(B),
+          .D_i(gpr_read3),
           .ALUOp_i(ALUOp),
           .A_o(ALU_A),
           .B_o(ALU_B),
+          .D_o(ALU_D),
           .ALUOp_o(ALU_ALUOp)
       );
 alu_32 mips_alu_32(
            .A(ALU_A),
            .B(ALU_B),
+           .D(ALU_D),
            .ALUOp(ALU_ALUOp),
            .C(alu_output),
            .Zero(Zero)

@@ -29,6 +29,8 @@ output reg [2: 0] WDSel;
 reg flush;
 
 //指令类型判断
+//新增
+assign ForType = (opcode == `INSTR_ForType_OP);
 //r-r
 assign RType = (opcode == `INSTR_RTYPE_OP) & !nop;
 //r-i
@@ -220,6 +222,23 @@ always @( * ) begin
             RFWr = 1'b0;
             GPRSel = `GPRSel_RD;
         end
+    end
+    else if (ForType) begin
+        NPCOp = `NPC_PLUS4;
+        ALUOp = `ALUOp_MAX;
+        //通用寄存器写信号为1，允许写
+        RFWr = 1'b1;
+        DMWr = 1'b0;
+        EXTOp = 0;
+        //选择将数据写入的寄存器，该寄存器地址存放在 rd 中
+        GPRSel = `GPRSel_RD;
+        //写入通用寄存器的数据来自 alu 的运算结果
+        WDSel = `WDSel_FromALU;
+        //ALU 运算器的 B 源操作数来自通用寄存器的 readD2
+        BSel <= 1'b0;
+        //A 源操作数选择 readD1
+        ASel <= 1'b0;
+        flush = 0;
     end
     else if (Type_other) begin
         NPCOp = `NPC_EXCEPT;
