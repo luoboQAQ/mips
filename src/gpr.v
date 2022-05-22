@@ -1,38 +1,38 @@
 `timescale 1ns/10ps 
-//¼Ä´æÆ÷Ä£¿é
+//å¯„å­˜å™¨æ¨¡å—
 module gpr(clk, reset, we, addr1, addr2, addr3, inputdata, RD1, RD2);
 input clk;
-input reset; //ÖØÖÃĞÅºÅ
-input we; //´Ó¿ØÖÆµ¥ÔªÀ´µÄ¶ÁĞ´¿ØÖÆĞÅºÅ
+input reset; //é‡ç½®ä¿¡å·
+input we; //ä»æ§åˆ¶å•å…ƒæ¥çš„è¯»å†™æ§åˆ¶ä¿¡å·
 input [4: 0] addr1; //rs
 input [4: 0] addr2; //rt
 input [4: 0] addr3; //rd
-input [31: 0] inputdata; //´æÈë[rd]µÄÊı¾İ
-output [31: 0] RD1; //[rs]Êı¾İ
-output [31: 0] RD2; //[rt]Êı¾İ
-reg [31: 0] registers [31: 0]; //¼Ä´æÆ÷¶ÑµÄÊµÏÖ
+input [31: 0] inputdata; //å­˜å…¥[rd]çš„æ•°æ®
+output [31: 0] RD1; //[rs]æ•°æ®
+output [31: 0] RD2; //[rt]æ•°æ®
+reg [31: 0] registers [31: 0]; //å¯„å­˜å™¨å †çš„å®ç°
 integer i = 0;
 
-//±£ÕÏ addr3==addr1||addr3==addr2 Ê±Êä³öµÄRD1,RD2 ²»±ä  ÎªÊ²Ã´£¿
-assign RD1 = (clk == 1) ? registers[addr1] : RD1; //´Ó¼Ä´æÆ÷ÖĞ¶ÔÓ¦µØÖ· addr1 µÄÎ»ÖÃÈ¡Êı¾İµ½ RD1
-assign RD2 = (clk == 1) ? registers[addr2] : RD2; //´Ó¼Ä´æÆ÷ÖĞ¶ÔÓ¦µØÖ· addr2 µÄÎ»ÖÃÈ¡Êı¾İµ½ RD2
+//ä¿éšœ addr3==addr1||addr3==addr2 æ—¶è¾“å‡ºçš„RD1,RD2 ä¸å˜  ä¸ºä»€ä¹ˆï¼Ÿ
+assign RD1 = (clk == 1) ? registers[addr1] : RD1; //ä»å¯„å­˜å™¨ä¸­å¯¹åº”åœ°å€ addr1 çš„ä½ç½®å–æ•°æ®åˆ° RD1
+assign RD2 = (clk == 1) ? registers[addr2] : RD2; //ä»å¯„å­˜å™¨ä¸­å¯¹åº”åœ°å€ addr2 çš„ä½ç½®å–æ•°æ®åˆ° RD2
 
-//³õÊ¼»¯¼Ä´æÆ÷
+//åˆå§‹åŒ–å¯„å­˜å™¨
 initial begin
     for (i = 0; i < 32; i = i + 1) begin
         registers[i] = 32'h00000000;
     end
 end
 
-always @ ( posedge reset or negedge clk) begin //µÍµçÆ½´¥·¢±£´æ
-    //¼ì²âÊÇ·ñ¸´Î»
+always @ ( posedge reset or negedge clk) begin //ä½ç”µå¹³è§¦å‘ä¿å­˜
+    //æ£€æµ‹æ˜¯å¦å¤ä½
     if (reset) begin
         for (i = 0; i < 32; i = i + 1) begin
             registers[i] = 32'h00000000;
         end
     end
-    else if (we & addr3 != 5'h00) begin //µÚ 0 ºÅ¼Ä´æÆ÷²»¿É±»¸ü¸Ä
-        //½«Êı¾İĞ´ÈërdµØÖ·¶ÔÓ¦µÄ¼Ä´æÆ÷
+    else if (we & addr3 != 5'h00) begin //ç¬¬ 0 å·å¯„å­˜å™¨ä¸å¯è¢«æ›´æ”¹
+        //å°†æ•°æ®å†™å…¥rdåœ°å€å¯¹åº”çš„å¯„å­˜å™¨
         registers[addr3] <= inputdata;
         // $display("addr: %d, data: %4h",addr3, inputdata);
     end

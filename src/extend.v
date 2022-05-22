@@ -1,20 +1,20 @@
 `timescale 1ns / 1ps
 `include "ctrl_encode_def.v" 
-//À©Õ¹Ä£¿é
+//æ‰©å±•æ¨¡å—
 module Extend( Imm16, EXTOp, Imm32 );
-//Ö¸ÁîÖĞµÄ 16 Î»Á¢¼´Êı
+//æŒ‡ä»¤ä¸­çš„ 16 ä½ç«‹å³æ•°
 input [15: 0] Imm16;
-//ÍØÕ¹ÀàĞÍ
+//æ‹“å±•ç±»å‹
 input [1: 0]EXTOp;
-//ÍØÕ¹ºóÊı¾İ
+//æ‹“å±•åæ•°æ®
 output reg [31: 0] Imm32;
 
 always @( * ) begin
     case (EXTOp)
-        //0ÍØÕ¹
+        //0æ‹“å±•
         `EXT_ZERO:
             Imm32 = {16'd0, Imm16};
-        //·ûºÅÍØÕ¹
+        //ç¬¦å·æ‹“å±•
         `EXT_SIGNED:
             Imm32 = {{16{Imm16[15]}}, Imm16};
         //`EXT_HIGHPOS: Imm32 = {Imm16,16'd0};//lui

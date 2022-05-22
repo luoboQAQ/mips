@@ -1,29 +1,29 @@
 `timescale 1ns/10ps
 `include "ctrl_encode_def.v"
 module npc(PC, NPCOp, IMM, RS, NPC);
-//µ±Ç°Ö¸ÁîµØÖ·
+//å½“å‰æŒ‡ä»¤åœ°å€
 input [31: 0] PC;
-//ÏÂÒ»ÌõÖ¸ÁîµØÖ·±ä»¯ÀàĞÍ,À´×Ôctrl
+//ä¸‹ä¸€æ¡æŒ‡ä»¤åœ°å€å˜åŒ–ç±»å‹,æ¥è‡ªctrl
 input [2: 0] NPCOp;
-//Ö¸ÁîÖĞµÄµØÖ·ĞÅÏ¢
+//æŒ‡ä»¤ä¸­çš„åœ°å€ä¿¡æ¯
 input [25: 0] IMM;
-//Ö¸ÁîÖĞµÄ²Ù×÷Êı
+//æŒ‡ä»¤ä¸­çš„æ“ä½œæ•°
 input [31: 0] RS;
-//ÏÂÒ»ÌõÖ¸ÁîµØÖ·
+//ä¸‹ä¸€æ¡æŒ‡ä»¤åœ°å€
 output reg [31: 0] NPC;
 
 always @( * ) begin
     case (NPCOp)
-        //Ë³Ğò
+        //é¡ºåº
         `NPC_PLUS4:
             NPC = PC + 4;
-        //·ÖÖ§
+        //åˆ†æ”¯
         `NPC_BRANCH:
             NPC = PC + 4 + {{14{IMM[15]}}, IMM[15: 0], 2'b00};
-        //Ìø×ª
+        //è·³è½¬
         `NPC_JUMP:
             NPC = {PC[31: 28], IMM[25: 0], 2'b00};
-        //JRÖ¸Áî
+        //JRæŒ‡ä»¤
         `NPC_JR:
             NPC = RS;
         default:

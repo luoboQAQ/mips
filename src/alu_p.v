@@ -7,7 +7,7 @@ output reg [31: 0] A_o;
 output reg [31: 0] B_o;
 output reg [4: 0] ALUOp_o;
 
-//保证同时进入 alu
+//淇濊瘉鍚屾椂杩涘叆 alu
 always@( * ) begin
     A_o <= A_i;
     B_o <= B_i;

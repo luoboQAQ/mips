@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps 
-//¶þÑ¡Ò»Ñ¡ÔñÆ÷
+//äºŒé€‰ä¸€é€‰æ‹©å™¨
 module mux2 (d0, d1, s, y);
 input [31: 0] d0, d1;
 input s;
@@ -7,7 +7,7 @@ output [31: 0] y;
 assign y = ( s == 1'b1 ) ? d1 : d0;
 endmodule
 
-//ËÄÑ¡Ò»Ñ¡ÔñÆ÷
+//å››é€‰ä¸€é€‰æ‹©å™¨
 module mux4 (d0, d1, d2, d3, s, y);
 input [31: 0] d0, d1, d2, d3;
 input [1: 0] s;
